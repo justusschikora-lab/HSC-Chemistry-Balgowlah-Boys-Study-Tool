@@ -481,6 +481,20 @@ const QBANK=[
   criteria:"Criteria (3): q = mcΔT = 100 g × 4.18 × 6.8 = 2843 J = 2.84 kJ; n(H₂O) = n(HCl) = 0.0500 mol; ΔH = −q/n = −2.84/0.0500 = −56.8 kJ mol⁻¹. Marks: correct q (using combined mass 100 g), correct n, and ΔH with negative sign + units."}
 ];
 
+/* ============================ MC QUESTION BANK ============================ */
+const MC_BANK=[
+ {q:"Which statement correctly describes dynamic equilibrium?",choices:["A) [reactants] = [products]","B) The forward and reverse rates are equal and non-zero","C) The forward reaction has stopped completely","D) The system must be in an open container"],correct:1,a:"B — dynamic equilibrium requires both the forward and reverse reactions to continue at equal rates. Concentrations remain constant but are not necessarily equal to each other.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.1"},
+ {q:"Which of the following does NOT change the value of Keq for a given reaction?",choices:["A) Increasing the temperature","B) Adding a catalyst","C) Decreasing the temperature","D) Raising the temperature from 25 °C to 80 °C"],correct:1,a:"B — a catalyst lowers the activation energy equally for both forward and reverse reactions. It increases the rate of reaching equilibrium but does not affect the equilibrium position or Keq. Only temperature changes Keq.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.2"},
+ {q:"For the reaction N₂(g) + 3H₂(g) ⇌ 2NH₃(g), what is the effect of increasing pressure?",choices:["A) Shifts equilibrium left; decreases NH₃ yield","B) Shifts equilibrium right; increases NH₃ yield","C) No change to equilibrium position","D) Increases Keq"],correct:1,a:"B — increasing pressure shifts the equilibrium toward the side with fewer moles of gas. The left has 4 mol gas, the right has 2 mol, so the equilibrium shifts right, increasing NH₃ yield. Keq is unchanged.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.3"},
+ {q:"A solution has [H⁺] = 1×10⁻⁴ mol L⁻¹. What is the pH?",choices:["A) −4","B) 4","C) 10","D) 0.0001"],correct:1,a:"B — pH = −log₁₀[H⁺] = −log₁₀(1×10⁻⁴) = −(−4) = 4.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.3"},
+ {q:"Which of the following is amphiprotic?",choices:["A) HCl","B) NaOH","C) HCO₃⁻","D) SO₄²⁻"],correct:2,a:"C — HCO₃⁻ can donate a proton (acting as acid: HCO₃⁻ → CO₃²⁻ + H⁺) or accept a proton (acting as base: HCO₃⁻ + H⁺ → H₂CO₃). This makes it amphiprotic.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.1"},
+ {q:"In the reaction NH₃ + H₂O ⇌ NH₄⁺ + OH⁻, which is the Brønsted–Lowry acid?",choices:["A) NH₃","B) H₂O","C) NH₄⁺","D) OH⁻"],correct:1,a:"B — H₂O donates a proton (H⁺) to NH₃ in this reaction, making it the Brønsted–Lowry acid. NH₃ accepts the proton, making it the base.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.2"},
+ {q:"25.0 mL of 0.100 mol L⁻¹ NaOH is titrated against HCl with an average titre of 20.0 mL. What is the concentration of HCl?",choices:["A) 0.0500 mol L⁻¹","B) 0.100 mol L⁻¹","C) 0.125 mol L⁻¹","D) 0.200 mol L⁻¹"],correct:2,a:"C — n(NaOH) = 0.100 × 0.0250 = 2.50×10⁻³ mol. 1:1 ratio → n(HCl) = 2.50×10⁻³ mol. c(HCl) = 2.50×10⁻³ / 0.0200 = 0.125 mol L⁻¹.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.4"},
+ {q:"What is the IUPAC name of CH₃CH(OH)CH₂CH₃?",choices:["A) Butan-1-ol","B) Butan-2-ol","C) 2-methylpropan-1-ol","D) Propan-2-ol"],correct:1,a:"B — the longest carbon chain contains 4 carbons (butane). The −OH group is on C2 when numbered from the end that gives the lowest locant. Name: butan-2-ol.",type:"HSC",mod:7,marks:1,qtype:"mc",tid:"m7.1"},
+ {q:"Which functional group gives the highest boiling point for molecules of similar molecular mass?",choices:["A) Alkane (C−C only)","B) Halogenoalkane (C−X)","C) Ketone (C=O)","D) Alcohol (−OH)"],correct:3,a:"D — alcohols form hydrogen bonds (H bonded to highly electronegative O), which are the strongest IMF among the options listed. Hydrogen bonding requires significantly more energy to break, giving higher boiling points.",type:"HSC",mod:7,marks:1,qtype:"mc",tid:"m7.3"},
+ {q:"Which statement about strong acids is correct?",choices:["A) Strong acids are highly concentrated","B) Strong acids ionise completely in water","C) Strong acids have a high pH","D) Strong acids form weak conjugate bases"],correct:1,a:"B — 'strong' refers to the degree of ionisation, not concentration. A strong acid ionises (dissociates) essentially 100% in water. Note: a strong acid actually has a WEAK conjugate base (option D is incorrect — strong acids have weak conjugate bases, not strong ones).",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.3"}
+];
+
 /* ============================ EXAM TECHNIQUE — NESA DIRECTIVE VERBS ============================ */
 const DIRECTIVES=[
  ["Account for","State reasons for; give the cause of (a 'why' question)."],
@@ -857,44 +871,89 @@ function dotHTML(t,m){
 
 /* ---------- QUIZ ---------- */
 let quiz=null;
-function gatherQuestions(modIds){const out=[];MODULES.filter(m=>modIds.includes(m.id)).forEach(m=>{allTopics(m).forEach(t=>{const base=t.questions||[];const n=qCount(t.id,base.length);for(let i=0;i<n;i++){const bq=base[i];const q=field(t.id,'q'+i,bq?bq.q:'');const a=field(t.id,'a'+i,bq?bq.a:'');if(q&&a)out.push({q,a,type:bq?bq.type:'Custom',mod:m.num,tid:t.id});}});});return out;}
+function gatherQuestions(modIds){
+  const out=[];
+  MODULES.filter(m=>modIds.includes(m.id)).forEach(m=>{allTopics(m).forEach(t=>{const base=t.questions||[];const n=qCount(t.id,base.length);for(let i=0;i<n;i++){const bq=base[i];const q=field(t.id,'q'+i,bq?bq.q:'');const a=field(t.id,'a'+i,bq?bq.a:'');if(q&&a)out.push({q,a,type:bq?bq.type:'Custom',mod:m.num,tid:t.id,marks:bq&&bq.marks?bq.marks:1,qtype:bq&&bq.qtype?bq.qtype:'short',part:bq&&bq.part?bq.part:'',choices:bq?bq.choices||null:null,correct:bq&&bq.correct!=null?bq.correct:null});}});});
+  MC_BANK.filter(q=>modIds.some(id=>{const m=moduleById(id);return m&&m.num===q.mod;})).forEach(q=>out.push(q));
+  return out;
+}
 function viewQuiz(){
   if(quiz&&quiz.active)return quizRunningHTML();
   if(quiz&&quiz.done)return quizResultHTML();
-  const modChips=MODULES.map(m=>`<button class="chip ${(!quiz||quiz.sel.includes(m.id))?'on':''}" data-quizmod="${m.id}">Mod ${m.num}</button>`).join('');
-  if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10};
-  const avail=gatherQuestions(quiz.sel).length;
-  const hist=state.quizLog.slice().reverse().slice(0,8).map(q=>`<div class="kv"><span>${esc(q.date)} · Mods ${q.mods}</span><span class="${q.score/q.total>=0.7?'accent':''}">${q.score}/${q.total} (${Math.round(q.score/q.total*100)}%)</span></div>`).join('')||'<div class="muted small">No quizzes logged yet.</div>';
+  if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};
+  if(!quiz.qtype)quiz.qtype='all';
+  const modChips=MODULES.map(m=>`<button class="chip ${quiz.sel.includes(m.id)?'on':''}" data-quizmod="${m.id}">Mod ${m.num}</button>`).join('');
+  const typeChips=[['all','All types'],['short','Written'],['mc','Multiple Choice']].map(([v,l])=>`<button class="chip ${quiz.qtype===v?'on':''}" data-qtype="${v}">${l}</button>`).join('');
+  let pool=gatherQuestions(quiz.sel);
+  if(quiz.qtype!=='all')pool=pool.filter(q=>(q.qtype||'short')===quiz.qtype);
+  const avail=pool.length;
+  const availMarks=pool.reduce((s,q)=>s+(q.marks||1),0);
+  const hist=state.quizLog.slice().reverse().slice(0,8).map(q=>`<div class="kv"><span>${esc(q.date)} · Mods ${q.mods}</span><span class="${q.score/q.total>=0.7?'accent':''}">${q.score}/${q.total} marks (${Math.round(q.score/q.total*100)}%)</span></div>`).join('')||'<div class="muted small">No quizzes logged yet.</div>';
   return `
-  <div class="page-head"><div><h1>Quiz Mode</h1><p>Randomised questions — self-marked, with score history.</p></div></div>
+  <div class="page-head"><div><h1>Quiz Mode</h1><p>Typed answers, multiple choice, and mark-based scoring.</p></div></div>
   <div class="card">
     <b>1. Pick modules</b><div class="chips" style="margin:8px 0 14px">${modChips}</div>
-    <b>2. How many questions?</b>
+    <b>2. Question type</b><div class="chips" style="margin:8px 0 14px">${typeChips}</div>
+    <b>3. How many questions?</b>
     <div class="row" style="margin:8px 0 14px"><select id="quizLen">
       ${[5,10,15,20].map(n=>`<option value="${n}" ${quiz.len===n?'selected':''}>${n} questions</option>`).join('')}
-    </select><span class="muted small">${avail} questions available in selection</span></div>
+    </select><span class="muted small">${avail} questions · ${availMarks} marks available</span></div>
     <button class="btn" data-quizstart ${avail===0?'disabled':''}>Start quiz →</button>
   </div>
   <h3 style="margin:18px 0 8px">History</h3><div class="card">${hist}</div>`;
 }
 function quizRunningHTML(){
   const q=quiz.items[quiz.i];
-  return `<div class="page-head"><div><h1>Quiz · Q${quiz.i+1}/${quiz.items.length}</h1><p>Score so far: ${quiz.score}/${quiz.answered}</p></div></div>
+  const marks=q.marks||1;
+  const qtype=q.qtype||'short';
+  const isMC=qtype==='mc';
+  const part=q.part?`<span class="muted">(${q.part})</span> `:'';
+  const markPips='●'.repeat(Math.min(marks,5))+(marks>5?'+':'');
+  let body='';
+  if(isMC){
+    const choices=q.choices||[];
+    const done=quiz.mcSelected!=null;
+    body=choices.map((c,i)=>{
+      let style='width:100%;text-align:left;margin:5px 0;padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;color:var(--text)';
+      if(done){if(i===q.correct)style+='background:#14532d44;border-color:#22c55e';else if(i===quiz.mcSelected)style+='background:#7f1d1d44;border-color:#ef4444';}
+      return `<button style="${style}" data-quizmcanswer="${i}" ${done?'disabled':''}>${esc(c)}</button>`;
+    }).join('');
+    if(done){
+      const correct=quiz.mcSelected===q.correct;
+      body+=`<div class="box ${correct?'def':'trap'}" style="margin-top:12px"><span class="bx-l">${correct?'✓ Correct +'+marks+' mark'+(marks>1?'s':''):'✗ Incorrect'}</span>${esc(q.a)}</div>
+      <div class="row" style="margin-top:12px"><button class="btn" data-quizmark="${correct?marks:0}">Next →</button></div>`;
+    }
+  } else {
+    body=`<textarea class="notes" style="width:100%;min-height:90px;margin:10px 0 6px;box-sizing:border-box" placeholder="Type your answer here…" id="quizAnswer">${esc(quiz.userAnswer||'')}</textarea>`;
+    if(!quiz.revealed){
+      body+=`<button class="btn ghost sm" data-quizreveal>Show marking criteria</button>`;
+    } else {
+      if(quiz.userAnswer)body+=`<div class="box tip" style="margin:10px 0 4px"><span class="bx-l">Your answer</span><div style="white-space:pre-wrap">${esc(quiz.userAnswer)}</div></div>`;
+      body+=`<div class="box def" style="margin-top:10px;white-space:pre-wrap"><span class="bx-l">Marking criteria (${marks} mark${marks>1?'s':''})</span>${esc(q.a)}</div>`;
+      const markBtns=Array.from({length:marks+1},(_,n)=>`<button class="btn sm ${n===0?'ghost':''}" data-quizmark="${n}">${n}/${marks}</button>`).join(' ');
+      body+=`<div style="margin-top:14px"><div class="muted small" style="margin-bottom:8px">How many marks did you earn?</div><div class="row" style="flex-wrap:wrap;gap:6px">${markBtns}</div></div>`;
+    }
+  }
+  const marksStr=quiz.marksAvail>0?`${quiz.marksEarned}/${quiz.marksAvail} marks`:'';
+  return `<div class="page-head"><div><h1>Quiz · Q${quiz.i+1}/${quiz.items.length}</h1><p>${marksStr}</p></div></div>
   <div class="card">
-    <div class="row" style="justify-content:space-between"><span class="tag ${q.type==='HSC'?'hsc':q.type==='Custom'?'custom':'syl'}">${esc(q.type)} · Mod ${q.mod}</span><span class="muted small">${quiz.answered} answered</span></div>
-    <div class="qq" style="font-size:16px;margin:12px 0">${q.q}</div>
-    <button class="btn ghost sm" data-quizreveal>Reveal answer</button>
-    <div class="ans ${quiz.revealed?'':'hidden'}" style="margin-top:12px;white-space:pre-wrap;border-top:1px dashed var(--line);padding-top:12px">${q.a}</div>
-    ${quiz.revealed?`<div class="row" style="margin-top:14px"><span class="muted small">Mark yourself:</span>
-      <button class="btn sm" data-quizmark="1">✓ I got it right</button>
-      <button class="btn sm ghost" data-quizmark="0">✗ Got it wrong</button></div>`:''}
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div class="chips" style="gap:4px"><span class="chip on" style="pointer-events:none">${esc(q.type)}</span><span class="chip on" style="pointer-events:none">Mod ${q.mod}</span><span class="chip on" style="pointer-events:none">${isMC?'Multiple Choice':marks+' mark'+(marks>1?'s':'')}</span>${q.part?`<span class="chip on" style="pointer-events:none">Part (${q.part})</span>`:''}</div>
+      <span class="accent" title="${marks} mark${marks>1?'s':''}">${markPips}</span>
+    </div>
+    <div class="qq" style="font-size:16px;margin-bottom:12px">${part}${q.q}</div>
+    ${body}
   </div>`;
 }
 function quizResultHTML(){
-  const pct=Math.round(quiz.score/quiz.items.length*100);
-  return `<div class="page-head"><div><h1>Quiz complete</h1><p>Nice work — logged to your history.</p></div></div>
-  <div class="card" style="text-align:center"><div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b><small>${quiz.score}/${quiz.items.length}</small></div></div>
-    <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-quizagain>New quiz</button><button class="btn ghost" data-nav="revision">Revise weak spots</button></div></div>`;
+  const pct=quiz.marksAvail>0?Math.round(quiz.marksEarned/quiz.marksAvail*100):0;
+  const grade=pct>=90?'🏆 Outstanding':pct>=75?'⭐ Strong':pct>=50?'📈 Developing':'📚 Needs work';
+  return `<div class="page-head"><div><h1>Quiz complete</h1><p>${grade} — logged to your history.</p></div></div>
+  <div class="card" style="text-align:center">
+    <div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b><small>${quiz.marksEarned}/${quiz.marksAvail}</small></div></div>
+    <p class="muted" style="margin:8px 0 16px">${quiz.marksEarned} marks earned of ${quiz.marksAvail} available</p>
+    <div class="row" style="justify-content:center"><button class="btn" data-quizagain>New quiz</button><button class="btn ghost" data-nav="revision">Revise weak spots</button></div>
+  </div>`;
 }
 
 /* ---------- SMART REVISION ---------- */
@@ -1096,7 +1155,7 @@ function applyTheme(){document.documentElement.setAttribute('data-theme',state.t
 
 /* ============================ EVENT DELEGATION ============================ */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-ptmode],[data-z]');
+  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-ptmode],[data-qtype],[data-quizmcanswer],[data-z]');
   if(!el)return;
   if(el.dataset.nav){go(el.dataset.nav);}
   else if(el.dataset.jump){openDot(el.dataset.jump);}
@@ -1107,10 +1166,12 @@ document.addEventListener('click',e=>{
   else if(el.dataset.addDot){const mid=el.dataset.addDot;state.addedDots[mid]=state.addedDots[mid]||[];const idx=state.addedDots[mid].length+1;state.addedDots[mid].push({id:mid+'.custom'+Date.now(),title:'New custom dot point',tags:['Custom'],questions:[]});save();SEARCH_IDX=null;render();}
   else if(el.dataset.addQ){const tid=el.dataset.addQ;state.addedQ[tid]=(state.addedQ[tid]||0)+1;save();render();setTimeout(()=>openDot(tid),20);}
   // quiz
-  else if(el.dataset.quizmod){const id=el.dataset.quizmod;const i=quiz.sel.indexOf(id);if(i>=0){if(quiz.sel.length>1)quiz.sel.splice(i,1);}else quiz.sel.push(id);render();}
+  else if(el.dataset.qtype){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};quiz.qtype=el.dataset.qtype;render();}
+  else if(el.dataset.quizmod){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};const id=el.dataset.quizmod;const i=quiz.sel.indexOf(id);if(i>=0){if(quiz.sel.length>1)quiz.sel.splice(i,1);}else quiz.sel.push(id);render();}
   else if(el.hasAttribute('data-quizstart')){startQuiz();}
-  else if(el.hasAttribute('data-quizreveal')){quiz.revealed=true;render();}
-  else if(el.dataset.quizmark!=null){const correct=+el.dataset.quizmark;const it=quiz.items[quiz.i];if(it&&it.tid){const s=state.quizStats[it.tid]||{r:0,w:0};correct?s.r++:s.w++;state.quizStats[it.tid]=s;}quiz.score+=correct;quiz.answered++;quiz.i++;quiz.revealed=false;if(quiz.i>=quiz.items.length){finishQuiz();}save();buildNav();render();}
+  else if(el.hasAttribute('data-quizreveal')){const ta=document.getElementById('quizAnswer');if(ta)quiz.userAnswer=ta.value;quiz.revealed=true;render();}
+  else if(el.dataset.quizmcanswer!=null){quiz.mcSelected=+el.dataset.quizmcanswer;render();}
+  else if(el.dataset.quizmark!=null){const earned=+el.dataset.quizmark;const maxM=quiz.items[quiz.i]?quiz.items[quiz.i].marks||1:1;const it=quiz.items[quiz.i];if(it&&it.tid){const s=state.quizStats[it.tid]||{r:0,w:0};earned>=maxM?s.r++:s.w++;state.quizStats[it.tid]=s;}quiz.marksEarned+=earned;quiz.answered++;quiz.i++;quiz.revealed=false;quiz.userAnswer='';quiz.mcSelected=null;if(quiz.i>=quiz.items.length){finishQuiz();}save();buildNav();render();}
   else if(el.hasAttribute('data-quizagain')){quiz=null;render();}
   else if(el.dataset.revmod){revFilter.mod=el.dataset.revmod;render();}
   else if(el.dataset.revstat){revFilter.status=el.dataset.revstat;render();}
@@ -1139,15 +1200,22 @@ document.addEventListener('click',e=>{
   else if(el.dataset.z){const z=+el.dataset.z;const r=PTABLE.find(p=>p[0]===z);if(r&&r[6]){const d=r[6];const info=document.getElementById('ptInfo');if(info){let h=`<b class="accent" style="font-size:15px">${r[1]} — ${esc(r[2])}</b><br/><div class="small muted" style="margin:6px 0 10px"><span class="pill">Z=${r[0]}</span><span class="pill">A=${r[3]}</span><span class="pill">Group ${r[4]}</span><span class="pill">Period ${r[5]}</span></div>`;h+=`<div class="kv"><span>Electronegativity (Pauling)</span><span class="accent">${d.en!=null?d.en.toFixed(2):'N/A'}</span></div>`;h+=`<div class="kv"><span>Electron configuration</span><span class="small">${esc(d.config)}</span></div>`;h+=`<div class="kv"><span>State (room temp)</span><span>${esc(d.state)}</span></div>`;h+=`<div class="kv"><span>Common oxidation states</span><span>${esc(d.ox)}</span></div>`;h+=`<div class="kv"><span>1st ionisation energy</span><span>${IE_DATA[z]!=null?IE_DATA[z]+' kJ mol⁻¹':'N/A'}</span></div>`;h+=`<div class="kv"><span>Electrical conductivity</span><span>${COND_DATA[z]!=null?COND_LABEL[COND_DATA[z]]:'Unknown'}</span></div>`;info.innerHTML=h;}}}
 });
 
-function startQuiz(){const all=gatherQuestions(quiz.sel);for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
-  quiz.items=all.slice(0,Math.min(quiz.len,all.length));quiz.i=0;quiz.score=0;quiz.answered=0;quiz.revealed=false;quiz.active=true;quiz.done=false;streakToday();render();}
-function finishQuiz(){quiz.active=false;quiz.done=true;state.quizLog.push({date:new Date().toISOString().slice(0,10),score:quiz.score,total:quiz.items.length,mods:quiz.sel.map(m=>moduleById(m).num).join(',')});save();}
+function startQuiz(){
+  let all=gatherQuestions(quiz.sel);
+  if(quiz.qtype&&quiz.qtype!=='all')all=all.filter(q=>(q.qtype||'short')===quiz.qtype);
+  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  quiz.items=all.slice(0,Math.min(quiz.len,all.length));
+  quiz.i=0;quiz.marksEarned=0;quiz.marksAvail=quiz.items.reduce((s,q)=>s+(q.marks||1),0);
+  quiz.answered=0;quiz.revealed=false;quiz.userAnswer='';quiz.mcSelected=null;
+  quiz.active=true;quiz.done=false;streakToday();render();}
+function finishQuiz(){quiz.active=false;quiz.done=true;state.quizLog.push({date:new Date().toISOString().slice(0,10),score:quiz.marksEarned,total:quiz.marksAvail,mods:quiz.sel.map(m=>moduleById(m).num).join(',')});save();}
 
 /* ============================ INPUT EVENTS ============================ */
 document.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.note!=null){state.notes[t.dataset.note]=t.value;save();}
-  else if(t.id==='quizLen'){quiz.len=+t.value;}
+  else if(t.id==='quizAnswer'){if(quiz)quiz.userAnswer=t.value;}
+  else if(t.id==='quizLen'){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};quiz.len=+t.value;}
   else if(t.id==='drillType'){drill.type=t.value;drill.current=DRILLS.find(d=>d.id===drill.type).gen();drill.revealed=false;render();}
   else if(t.id==='glossSearch'){glossFilter=t.value.toLowerCase();filterGloss();}
   else if(t.id==='examDate'){state.examDate=t.value;save();refreshCountdown();render();}
