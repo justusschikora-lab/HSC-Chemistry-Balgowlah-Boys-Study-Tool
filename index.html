@@ -670,7 +670,7 @@ function effConf(tid){const c=confOf(tid);if(c)return c;if(isAutoWeak(tid))retur
 
 /* readiness score 0-100: blends completion, confidence, quiz accuracy */
 function readiness(){const dots=allDots();if(!dots.length)return 0;
-  let comp=0,conf=0;dots.forEach(({t})=>{if(state.check[t.id])comp++;const c=effConf(t.id);conf+=(c==='good'||(!c&&state.check[t.id]))?1:c==='shaky'?0.5:c==='weak'?0:0.15;});
+  let comp=0,conf=0;dots.forEach(({t})=>{if(state.check[t.id])comp++;const c=effConf(t.id);conf+=(c==='good'||(!c&&state.check[t.id]))?1:c==='shaky'?0.5:c==='weak'?0:0.0;});
   comp/=dots.length;conf/=dots.length;
   const ql=state.quizLog;const acc=ql.length?ql.reduce((s,q)=>s+q.score/q.total,0)/ql.length:0;
   const qWeight=ql.length?0.25:0;const cWeight=0.35,compWeight=0.40+(ql.length?0:0.25);
