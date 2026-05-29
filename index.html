@@ -568,7 +568,13 @@ const PT_CATEGORY=z=>{ // simple colour grouping
   if([9,17,35,53,85,117].includes(z))return'#eab308';
   if([2,10,18,36,54,86,118].includes(z))return'#8b5cf6';
   return'#64748b';};
-let ptHeatMap=false;const enColor=en=>{if(en===null||en===undefined)return'#64748b';const norm=(en-0.7)/(3.98-0.7);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;const r=Math.floor(0+(100-0)*t),g=Math.floor(50+(180-50)*t),b=Math.floor(255+(100-255)*t);return`rgb(${r},${g},${b})`;}else{const t=(clamped-0.5)*2;const r=Math.floor(100+(255-100)*t),g=Math.floor(180+(20-180)*t),b=Math.floor(100+(0-100)*t);return`rgb(${r},${g},${b})`;}}; /* blue (low EN) → red (high EN) */
+let ptMode=null; // null | 'en' | 'ie' | 'cond'
+const enColor=en=>{if(en==null)return'#64748b';const norm=(en-0.7)/(3.98-0.7);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* EN: blue(low)→red(high) */
+const IE_DATA={1:1312,2:2372,3:520,4:900,5:800,6:1086,7:1402,8:1314,9:1681,10:2081,11:496,12:738,13:577,14:786,15:1012,16:1000,17:1251,18:1521,19:419,20:590,21:633,22:659,23:651,24:653,25:717,26:762,27:760,28:737,29:745,30:906,31:579,32:762,33:947,34:941,35:1140,36:1351,37:403,38:550,39:600,40:640,41:652,42:685,43:702,44:711,45:720,46:805,47:731,48:868,49:558,50:709,51:834,52:869,53:1008,54:1170,55:376,56:503,57:538,72:659,73:761,74:770,75:760,76:840,77:880,78:870,79:890,80:1007,81:589,82:716,83:703,84:812,85:890,86:1037,87:393,88:509,89:499,58:534,59:527,60:533,61:540,62:545,63:547,64:593,65:566,66:573,67:581,68:589,69:597,70:603,71:524,90:587,91:568,92:598,93:605,94:585,95:578,96:581,97:601,98:608,99:619,100:627,101:635,102:642,103:443};
+const ieColor=ie=>{if(ie==null)return'#64748b';const norm=(ie-376)/(2372-376);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* IE: blue(low metals)→red(high noble gases) */
+const COND_DATA={1:0,2:0,3:4,4:4,5:2,6:2,7:0,8:0,9:0,10:0,11:4,12:4,13:5,14:2,15:1,16:1,17:0,18:0,19:4,20:4,21:4,22:4,23:4,24:4,25:4,26:4,27:4,28:4,29:5,30:4,31:4,32:2,33:2,34:1,35:1,36:0,37:4,38:4,39:4,40:4,41:4,42:4,43:4,44:4,45:4,46:4,47:5,48:4,49:4,50:4,51:2,52:2,53:1,54:0,55:4,56:4,57:4,72:4,73:4,74:4,75:4,76:4,77:4,78:4,79:5,80:3,81:4,82:4,83:3,84:3,85:1,86:0,87:4,88:4,89:4,58:4,59:4,60:4,61:4,62:4,63:4,64:4,65:4,66:4,67:4,68:4,69:4,70:4,71:4,90:4,91:4,92:4,93:4,94:4,95:4,96:4,97:4,98:4,99:4,100:4,101:4,102:4,103:4};
+const COND_LABEL={5:'Excellent conductor',4:'Metal (conductor)',3:'Poor conductor',2:'Semiconductor',1:'Insulator',0:'Non-conductive'};
+const condColor=l=>{if(l==null)return'#64748b';return['#1e293b','#1e3a8a','#0d9488','#f59e0b','#fb923c','#fbbf24'][Math.max(0,Math.min(5,l))];};
 
 /* ============================ SVG DIAGRAMS ============================ */
 const DIAGRAMS={
@@ -1035,7 +1041,7 @@ function viewReference(){
   const sheet=DATASHEET.map(g=>`<div class="card"><h3 style="margin:0 0 10px">${esc(g.group)}</h3><table class="tablebox">${g.rows.map(r=>`<tr><td>${esc(r[0])}</td><td style="font-family:'IBM Plex Mono',monospace">${esc(r[1])}</td></tr>`).join('')}</table></div>`).join('');
   return `<div class="page-head"><div><h1>Data Sheet &amp; Periodic Table</h1><p>The reference data you can assume in the HSC, plus an interactive periodic table.</p></div></div>
   <h3 style="margin:6px 0 8px">Interactive periodic table</h3>
-  <div class="card" style="overflow-x:auto"><div style="margin-bottom:10px"><button class="btn sm ${ptHeatMap?'on':'ghost'}" data-ptheatmap>🎨 Electronegativity heat map</button></div><div id="ptWrap"></div><div id="ptInfo" class="muted small" style="margin-top:10px">Click an element to see its details.</div></div>
+  <div class="card" style="overflow-x:auto"><div class="chips" style="margin-bottom:10px"><button class="btn sm ${ptMode==='en'?'on':'ghost'}" data-ptmode="en">🎨 Electronegativity</button><button class="btn sm ${ptMode==='ie'?'on':'ghost'}" data-ptmode="ie">⚡ Ionisation Energy</button><button class="btn sm ${ptMode==='cond'?'on':'ghost'}" data-ptmode="cond">🔌 Conductivity</button></div><div id="ptWrap"></div><div id="ptInfo" class="muted small" style="margin-top:10px">Click an element to see its details.</div></div>
   <h3 style="margin:16px 0 8px">NESA data sheet</h3>
   <div class="grid g2">${sheet}</div>`;
 }
@@ -1043,7 +1049,7 @@ function drawPeriodic(){
   const wrap=document.getElementById('ptWrap');if(!wrap)return;
   const cell=33,gap=3;const W=18*(cell+gap)+gap, H=10*(cell+gap)+gap;
   let cells='';
-  PTABLE.forEach(([z,sym,name,wt,x,y,data])=>{const col=ptHeatMap&&data?enColor(data.en):PT_CATEGORY(z);const px=gap+(x-1)*(cell+gap),py=gap+(y-1)*(cell+gap);
+  PTABLE.forEach(([z,sym,name,wt,x,y,data])=>{const col=ptMode==='en'&&data?enColor(data.en):ptMode==='ie'?ieColor(IE_DATA[z]):ptMode==='cond'?condColor(COND_DATA[z]):PT_CATEGORY(z);const px=gap+(x-1)*(cell+gap),py=gap+(y-1)*(cell+gap);
     cells+=`<g class="ptcell" data-z="${z}" style="cursor:pointer"><rect x="${px}" y="${py}" width="${cell}" height="${cell}" rx="4" fill="${col}22" stroke="${col}" stroke-width="1"/>
       <text x="${px+3}" y="${py+9}" font-size="6" fill="var(--muted)">${z}</text>
       <text x="${px+cell/2}" y="${py+20}" font-size="11" text-anchor="middle" font-weight="700" fill="var(--text)">${sym}</text>
@@ -1090,7 +1096,7 @@ function applyTheme(){document.documentElement.setAttribute('data-theme',state.t
 
 /* ============================ EVENT DELEGATION ============================ */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-ptheatmap],[data-z]');
+  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-ptmode],[data-z]');
   if(!el)return;
   if(el.dataset.nav){go(el.dataset.nav);}
   else if(el.dataset.jump){openDot(el.dataset.jump);}
@@ -1128,9 +1134,9 @@ document.addEventListener('click',e=>{
   else if(el.hasAttribute('data-etreveal')){const a=document.querySelector('[data-eterrans]');if(a){a.classList.remove('hidden');el.style.display='none';}}
   else if(el.hasAttribute('data-etnewdrill')){let n;do{n=PRACTICALS[Math.floor(Math.random()*PRACTICALS.length)];}while(n===etDrill&&PRACTICALS.length>1);etDrill=n;render();}
   // periodic table heat map toggle
-  else if(el.hasAttribute('data-ptheatmap')){ptHeatMap=!ptHeatMap;render();drawPeriodic();}
+  else if(el.dataset.ptmode){ptMode=(ptMode===el.dataset.ptmode?null:el.dataset.ptmode);render();drawPeriodic();}
   // periodic element
-  else if(el.dataset.z){const z=+el.dataset.z;const r=PTABLE.find(p=>p[0]===z);if(r&&r[6]){const d=r[6];const info=document.getElementById('ptInfo');if(info){let h=`<b class="accent" style="font-size:15px">${r[1]} — ${esc(r[2])}</b><br/><div class="small muted" style="margin:6px 0 10px"><span class="pill">Z=${r[0]}</span><span class="pill">A=${r[3]}</span><span class="pill">Group ${r[4]}</span><span class="pill">Period ${r[5]}</span></div>`;h+=`<div class="kv"><span>Electronegativity (Pauling)</span><span class="accent">${d.en!=null?d.en.toFixed(2):'N/A'}</span></div>`;h+=`<div class="kv"><span>Electron configuration</span><span class="small">${esc(d.config)}</span></div>`;h+=`<div class="kv"><span>State (room temp)</span><span>${esc(d.state)}</span></div>`;h+=`<div class="kv"><span>Common oxidation states</span><span>${esc(d.ox)}</span></div>`;info.innerHTML=h;}}}
+  else if(el.dataset.z){const z=+el.dataset.z;const r=PTABLE.find(p=>p[0]===z);if(r&&r[6]){const d=r[6];const info=document.getElementById('ptInfo');if(info){let h=`<b class="accent" style="font-size:15px">${r[1]} — ${esc(r[2])}</b><br/><div class="small muted" style="margin:6px 0 10px"><span class="pill">Z=${r[0]}</span><span class="pill">A=${r[3]}</span><span class="pill">Group ${r[4]}</span><span class="pill">Period ${r[5]}</span></div>`;h+=`<div class="kv"><span>Electronegativity (Pauling)</span><span class="accent">${d.en!=null?d.en.toFixed(2):'N/A'}</span></div>`;h+=`<div class="kv"><span>Electron configuration</span><span class="small">${esc(d.config)}</span></div>`;h+=`<div class="kv"><span>State (room temp)</span><span>${esc(d.state)}</span></div>`;h+=`<div class="kv"><span>Common oxidation states</span><span>${esc(d.ox)}</span></div>`;h+=`<div class="kv"><span>1st ionisation energy</span><span>${IE_DATA[z]!=null?IE_DATA[z]+' kJ mol⁻¹':'N/A'}</span></div>`;h+=`<div class="kv"><span>Electrical conductivity</span><span>${COND_DATA[z]!=null?COND_LABEL[COND_DATA[z]]:'Unknown'}</span></div>`;info.innerHTML=h;}}}
 });
 
 function startQuiz(){const all=gatherQuestions(quiz.sel);for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
